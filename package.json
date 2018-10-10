@@ -1,0 +1,39 @@
+{
+  "name": "hi-mysql",
+  "version": "1.0.0",
+  "description": "promise for github.com/mysqljs/mysql",
+  "main": "index.js",
+  "repository": "https://github.com/iamlaobie/hi-mysql",
+  "author": "iwater",
+  "email": "iwater@gmail.com",
+  "contributors": ["iamlaobie@gmail.com"],
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "jest --forceExit --coverage",
+    "eslint": "eslint ."
+  },
+  "dependencies": {
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.24.1",
+    "jest": "^23.6.0"
+  },
+  "jest": {
+    "globals": {
+      "mysqlConfig": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "root",
+        "password": "123456",
+        "database": "test"
+      }
+    }
+  }
+}
