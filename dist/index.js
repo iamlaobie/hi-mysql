@@ -23,9 +23,10 @@ const getFirstRow = rows => rows[0] || {};
 
 const createPool = options => {
   const pool = _mysql2.default.createPool(options);
+  const { charset, timezone } = options;
   pool.on('connection', connection => {
-    connection.query('SET SESSION time_zone =\'+8:00\'');
-    connection.query('SET NAMES utf8');
+    if (timezone) connection.query(`SET SESSION time_zone = ${timezone}`);
+    if (charset) connection.query(`SET NAMES {charset}`);
   });
 
   const query = (sql, args) => new Promise((resolve, reject) => {
