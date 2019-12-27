@@ -15,7 +15,7 @@ const createPool = (options) => {
   const pool = mysql.createPool(options);
   const { charset, timezone } = options;
   pool.on('connection', (connection) => {
-    if (timezone) connection.query(`SET SESSION time_zone = ${timezone}`);
+    if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
     if (charset) connection.query(`SET NAMES ${charset}`);
   });
 
