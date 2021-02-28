@@ -12,15 +12,31 @@ const getFirst = (rows) => {
 const getFirstRow = rows => rows[0] || {};
 
 const createPool = (options) => {
-  const pool = mysql.createPool(options);
+  let pool;
+  let slavePool;
+  if (Array.isArray(options)) {
+    const [masterOptions, slaveOptions] = options;
+    pool = mysql.createPool(masterOptions);
+    slavePool = mysql.createPool(slaveOptions);
+  } else {
+    pool = mysql.createPool(options);
+  }
   const { charset, timezone } = options;
   pool.on('connection', (connection) => {
     if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
     if (charset) connection.query(`SET NAMES ${charset}`);
   });
 
+  slavePool.on('connection', (connection) => {
+    if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
+    if (charset) connection.query(`SET NAMES ${charset}`);
+  });
   const query = (sql, args) => new Promise(((resolve, reject) => {
-    pool.query(sql, args, (err, rows) => {
+    let p = pool;
+    if (slavePool && sql.match(/^select/i)) {
+      p = slavePool;
+    }
+    p.query(sql, args, (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
     });

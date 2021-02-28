@@ -90,4 +90,8 @@ describe('mysql api', () => {
     expect(ret.length).toEqual(2);
     expect(ret[0].counter).toEqual(4);
   });
+
+  test('slave', async () => {
+    pool.add('')
+  });
 });

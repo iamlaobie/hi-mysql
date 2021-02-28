@@ -6,7 +6,9 @@
   "repository": "https://github.com/iamlaobie/hi-mysql",
   "author": "iwater",
   "email": "iwater@gmail.com",
-  "contributors": ["iamlaobie@gmail.com"],
+  "contributors": [
+    "iamlaobie@gmail.com"
+  ],
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -15,6 +17,7 @@
     "build": "babel index.js > dist/index.js"
   },
   "dependencies": {
+    "esm": "^3.2.25",
     "mysql": "^2.16.0"
   },
   "devDependencies": {
