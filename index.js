@@ -27,7 +27,7 @@ const createPool = (options) => {
     if (charset) connection.query(`SET NAMES ${charset}`);
   });
 
-  slavePool.on('connection', (connection) => {
+  slavePool && slavePool.on('connection', (connection) => {
     if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
     if (charset) connection.query(`SET NAMES ${charset}`);
   });
@@ -85,6 +85,7 @@ const createPool = (options) => {
   }).catch(err => Promise.reject(err));
 
   return {
+    pool,
     query,
     queryOne,
     queryObject,
