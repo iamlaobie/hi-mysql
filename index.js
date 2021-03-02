@@ -87,6 +87,7 @@ const createPool = (options) => {
   }).catch(err => Promise.reject(err));
 
   return {
+    pool,
     query,
     queryOne,
     queryObject,
