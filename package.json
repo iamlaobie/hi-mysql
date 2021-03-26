@@ -1,6 +1,6 @@
 {
   "name": "hi-mysql",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "promise for github.com/mysqljs/mysql",
   "main": "./dist/index.js",
   "repository": "https://github.com/iamlaobie/hi-mysql",
