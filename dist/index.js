@@ -22,16 +22,19 @@ const getFirst = rows => {
 const getFirstRow = rows => rows[0] || {};
 
 const createPool = options => {
-  let pool;
-  let slavePool;
+  let hasSlave = false;
+  const pool = _mysql2.default.createPoolCluster();
   if (Array.isArray(options)) {
-    const [masterOptions, slaveOptions] = options;
-    pool = _mysql2.default.createPool(masterOptions);
-    if (slaveOptions) {
-      slavePool = _mysql2.default.createPool(slaveOptions);
+    const [masterOptions, ...slaves] = options;
+    pool.add('master', masterOptions);
+    if (slaves && slaves.length) {
+      hasSlave = true;
+      slaves.forEach(opts => {
+        pool.add('slave', opts);
+      });
     }
   } else {
-    pool = _mysql2.default.createPool(options);
+    poolCluster.add('master', options);
   }
   const { charset, timezone } = options;
   pool.on('connection', connection => {
@@ -39,22 +42,18 @@ const createPool = options => {
     if (charset) connection.query(`SET NAMES ${charset}`);
   });
 
-  slavePool && slavePool.on('connection', connection => {
-    if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
-    if (charset) connection.query(`SET NAMES ${charset}`);
-  });
   const query = (sql, args) => new Promise((resolve, reject) => {
-    let p = pool;
-    if (slavePool && sql.match(/^select/i)) {
-      p = slavePool;
+    let p = pool.of('master');
+    if (hasSlave && sql.match(/^select/i)) {
+      p = pool.of('slave');
     }
     p.query(sql, args, (err, rows) => {
       if (err) reject(err);else resolve(rows);
     });
   });
 
-  const getConnection = () => new Promise((resolve, reject) => {
-    pool.getConnection((err, conn) => {
+  const getConnection = (ns = 'master') => new Promise((resolve, reject) => {
+    pool.getConnection(ns, (err, conn) => {
       if (err) reject(err);else resolve(conn);
     });
   });
@@ -70,7 +69,7 @@ const createPool = options => {
 
   const executeUpdate = (sql, args) => query(sql, args).then(result => result.affectedRows > 0);
 
-  const transaction = sqls => getConnection().then(conn => {
+  const transaction = sqls => getConnection('master').then(conn => {
     const transQuery = (sql, args) => new Promise((resolve, reject) => {
       conn.query(sql, args, (err, rows) => {
         if (err) reject(err);else resolve(rows);
