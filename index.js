@@ -19,23 +19,25 @@ const createPool = (options) => {
     pool.add('master', masterOptions);
     if (slaves && slaves.length) {
       hasSlave = true;
-      slaves.forEach(opts => {
-        pool.add('slave', opts);
+      slaves.forEach((opts, idx) => {
+        pool.add(`slave${idx}`, opts);
       });
     }
   } else {
     poolCluster.add('master', options);
   }
-  const { charset, timezone } = options;
-  pool.on('connection', (connection) => {
-    if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
-    if (charset) connection.query(`SET NAMES ${charset}`);
+  const { charset, timezone } = Array.isArray(options) ? options[0] : options ;
+  Object.keys(pool._nodes).forEach(key => {
+    pool._nodes[key].pool.on('connection', (connection) => {
+      if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
+      if (charset) connection.query(`SET NAMES ${charset}`);
+    });
   });
 
   const query = (sql, args) => new Promise(((resolve, reject) => {
     let p = pool.of('master');
     if (hasSlave && sql.match(/^select/i)) {
-      p = pool.of('slave');
+      p = pool.of('slave*');
     }
     p.query(sql, args, (err, rows) => {
       if (err) reject(err);
