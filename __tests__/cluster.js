@@ -4,7 +4,7 @@ const { createPool } = mysql;
 let pool;
 beforeAll(() => {
   // eslint-disable-next-line
-  pool = createPool(mysqlConfig); // The mysqlConfig defined in package.json
+  pool = createPool(mysqlCluster); // The mysqlConfig defined in package.json
   return pool.query('drop table jest').catch(() => {});
 });
 
@@ -76,6 +76,7 @@ describe('mysql api', () => {
 
   test('transcation success', async () => {
     await pool.transaction([['update jest set counter = 4 where id = 1'], ['insert into jest set counter = 9']]);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const ret = await pool.query('select * from jest');
     expect(ret.length).toEqual(2);
     expect(ret[0].counter).toEqual(4);

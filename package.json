@@ -1,6 +1,6 @@
 {
   "name": "hi-mysql",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "promise for github.com/mysqljs/mysql",
   "main": "./dist/index.js",
   "repository": "https://github.com/iamlaobie/hi-mysql",
@@ -12,7 +12,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest --forceExit --coverage",
+    "test": "jest -i --forceExit --coverage --detectOpenHandles",
     "eslint": "eslint . --fix",
     "build": "babel index.js > dist/index.js"
   },
@@ -33,12 +33,25 @@
   "jest": {
     "globals": {
       "mysqlConfig": {
-        "host": "127.0.0.1",
+        "host": "192.168.99.235",
         "port": 3306,
-        "user": "root",
-        "password": "123456",
+        "user": "develop",
+        "password": "***",
         "database": "test"
-      }
+      },
+      "mysqlCluster": [{
+        "host": "192.168.99.235",
+        "port": 3306,
+        "user": "develop",
+        "password": "***",
+        "database": "test"
+      },{
+        "host": "192.168.99.202",
+        "port": 3306,
+        "user": "develop",
+        "password": "***",
+        "database": "test"
+      }]
     }
   }
 }

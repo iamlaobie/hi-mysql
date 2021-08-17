@@ -24,7 +24,7 @@ const createPool = (options) => {
       });
     }
   } else {
-    poolCluster.add('master', options);
+    pool.add('master', options);
   }
   const { charset, timezone } = Array.isArray(options) ? options[0] : options ;
   Object.keys(pool._nodes).forEach(key => {
