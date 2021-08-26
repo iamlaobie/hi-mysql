@@ -34,7 +34,7 @@ const createPool = options => {
       });
     }
   } else {
-    poolCluster.add('master', options);
+    pool.add('master', options);
   }
   const { charset, timezone } = Array.isArray(options) ? options[0] : options;
   Object.keys(pool._nodes).forEach(key => {
@@ -47,7 +47,14 @@ const createPool = options => {
   const query = (sql, args) => new Promise((resolve, reject) => {
     let p = pool.of('master');
     if (hasSlave && sql.match(/^select/i)) {
-      p = pool.of('slave*');
+      // 假定每个节点的算力一致，master承担平均每个节点query的70%
+      const [masterOptions] = options;
+      const masterLoadQuery = masterOptions.loadQuery || 0.7;
+      const masterRatio = 1 / options.length * masterLoadQuery;
+      const rnd = Math.random();
+      if (masterRatio < rnd) {
+        p = pool.of('slave*');
+      }
     }
     p.query(sql, args, (err, rows) => {
       if (err) reject(err);else resolve(rows);
