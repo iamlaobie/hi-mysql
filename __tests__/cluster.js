@@ -63,6 +63,12 @@ describe('mysql api', () => {
     expect(ret).toEqual(1);
   });
 
+  test('queryOne forceMaster', async () => {
+    const ret = await pool.queryOne('select * from jest', null, { forceMaster: true });
+    expect(ret).toEqual(1);
+  });
+
+
   test('queryOne failer', async () => {
     const ret = await pool.queryOne('select * from jest where id = 99').catch(() => false);
     expect(ret).toBeFalsy();
@@ -91,5 +97,4 @@ describe('mysql api', () => {
     expect(ret.length).toEqual(2);
     expect(ret[0].counter).toEqual(4);
   });
-
 });

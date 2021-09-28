@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import mysql from 'mysql';
 
 const getFirst = (rows) => {
@@ -26,17 +27,18 @@ const createPool = (options) => {
   } else {
     pool.add('master', options);
   }
-  const { charset, timezone } = Array.isArray(options) ? options[0] : options ;
-  Object.keys(pool._nodes).forEach(key => {
+  const { charset, timezone } = Array.isArray(options) ? options[0] : options;
+  Object.keys(pool._nodes).forEach((key) => {
     pool._nodes[key].pool.on('connection', (connection) => {
       if (timezone) connection.query(`SET SESSION time_zone = '${timezone}'`);
       if (charset) connection.query(`SET NAMES ${charset}`);
     });
   });
 
-  const query = (sql, args) => new Promise(((resolve, reject) => {
+  const query = (sql, args, opts = {}) => new Promise(((resolve, reject) => {
+    const { forceMaster } = opts;
     let p = pool.of('master');
-    if (hasSlave && sql.match(/^select/i)) {
+    if (!forceMaster && hasSlave && sql.match(/^select/i)) {
       // 假定每个节点的算力一致，master承担平均每个节点query的70%
       const [masterOptions] = options;
       const masterLoadQuery = masterOptions.loadQuery || 0.7;
@@ -59,16 +61,16 @@ const createPool = (options) => {
     });
   }));
 
-  const queryOne = (sql, args) => {
+  const queryOne = (sql, args, opts) => {
     const self = { sql };
-    return query(sql, args).then(getFirst.bind(self));
+    return query(sql, args, opts).then(getFirst.bind(self));
   };
 
-  const queryObject = (sql, args) => query(sql, args).then(getFirstRow);
+  const queryObject = (sql, args, opts) => query(sql, args, opts).then(getFirstRow);
 
-  const executeInsert = (sql, args) => query(sql, args).then(result => result.insertId);
+  const executeInsert = (sql, args, opts) => query(sql, args, opts).then(result => result.insertId);
 
-  const executeUpdate = (sql, args) => query(sql, args).then(result => (result.affectedRows > 0));
+  const executeUpdate = (sql, args, opts) => query(sql, args, opts).then(result => (result.affectedRows > 0));
 
   const transaction = sqls => getConnection('master').then((conn) => {
     const transQuery = (sql, args) => new Promise(((resolve, reject) => {
