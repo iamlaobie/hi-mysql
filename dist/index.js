@@ -10,13 +10,13 @@ var _mysql2 = _interopRequireDefault(_mysql);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const getFirst = rows => {
+const getFirst = function (rows) {
   if (rows.length > 0) {
     const row = rows[0];
     const key = Object.keys(row)[0];
     return row[key];
   }
-  throw new Error(`NO DATA:${undefined.sql}`);
+  throw new Error(`NO DATA:${this.sql}`);
 }; /* eslint-disable no-underscore-dangle */
 
 

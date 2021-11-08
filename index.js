@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import mysql from 'mysql';
 
-const getFirst = (rows) => {
+const getFirst = function(rows) {
   if (rows.length > 0) {
     const row = rows[0];
     const key = Object.keys(row)[0];
