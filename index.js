@@ -14,7 +14,11 @@ const getFirstRow = rows => rows[0] || {};
 
 const createPool = (options) => {
   let hasSlave = false;
-  const pool = mysql.createPoolCluster();
+  const pool = mysql.createPoolCluster({
+    canRetry: true,
+    removeNodeErrorCount: 10,
+    restoreNodeTimeout: 10000,
+  });
   if (Array.isArray(options)) {
     const [masterOptions, ...slaves] = options;
     pool.add('master', masterOptions);
