@@ -1,6 +1,6 @@
 {
   "name": "hi-mysql",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "promise for github.com/mysqljs/mysql",
   "main": "./dist/index.js",
   "repository": "https://github.com/iamlaobie/hi-mysql",
@@ -35,23 +35,26 @@
       "mysqlConfig": {
         "host": "192.168.99.235",
         "port": 3306,
-        "user": "develop",
-        "password": "m5uOCzqeTpIyda3r",
+        "user": "root",
+        "password": "***",
         "database": "test"
       },
-      "mysqlCluster": [{
-        "host": "192.168.99.235",
-        "port": 3306,
-        "user": "develop",
-        "password": "m5uOCzqeTpIyda3r",
-        "database": "test"
-      },{
-        "host": "192.168.99.202",
-        "port": 3306,
-        "user": "develop",
-        "password": "m5uOCzqeTpIyda3r",
-        "database": "test"
-      }]
+      "mysqlCluster": [
+        {
+          "host": "192.168.99.235",
+          "port": 3306,
+          "user": "root",
+          "password": "***",
+          "database": "test"
+        },
+        {
+          "host": "192.168.99.202",
+          "port": 3306,
+          "user": "root",
+          "password": "***",
+          "database": "test"
+        }
+      ]
     }
   }
 }

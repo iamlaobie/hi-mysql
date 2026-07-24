@@ -49,12 +49,17 @@ const createPool = options => {
     const { forceMaster } = opts;
     let p = pool.of('master');
     if (!forceMaster && hasSlave && sql.match(/^select/i)) {
-      // 假定每个节点的算力一致，master承担平均每个节点query的70%
+      // masterOptions.loadQuery，master承select比重
+      // 如果没有配置，所有的select都走从库
       const [masterOptions] = options;
-      const masterLoadQuery = masterOptions.loadQuery || 0.7;
-      const masterRatio = 1 / options.length * masterLoadQuery;
-      const rnd = Math.random();
-      if (masterRatio < rnd) {
+      if (masterOptions.loadQuery) {
+        const masterLoadQuery = masterOptions.loadQuery || 0.7;
+        const masterRatio = 1 / options.length * masterLoadQuery;
+        const rnd = Math.random();
+        if (masterRatio < rnd) {
+          p = pool.of('slave*');
+        }
+      } else {
         p = pool.of('slave*');
       }
     }
